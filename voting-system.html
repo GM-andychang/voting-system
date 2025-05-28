@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>逢甲飲料店投票系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-attachment: fixed;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .drink-options {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 25px;
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .drink-options::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .drink-options::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .drink-options::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        .drink-options::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        .drink-option {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .drink-option:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .drink-option.selected {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-color: #667eea;
+        }
+        
+        .drink-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+        
+        .drink-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .drink-desc {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .results h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        
+        .result-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .result-name {
+            min-width: 200px;
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .result-bar {
+            flex: 1;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            margin-right: 15px;
+        }
+        
+        .result-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            transition: width 0.8s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .result-count {
+            min-width: 50px;
+            text-align: right;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .winner {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .vote-count-info {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            color: #495057;
+        }
+        
+        .qr-info {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+        }
+        
+        .qr-info h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .qr-info p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .drink-name {
+                font-size: 14px;
+            }
+            
+            .result-name {
+                min-width: 120px;
+                font-size: 12px;
+            }
+            
+            .result-bar {
+                margin-right: 10px;
+            }
+            
+            .result-fill {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🥤 逢甲飲料店投票系統</h1>
+        
+        <div id="loginForm">
+            <div class="qr-info">
+                <h3>歡迎參加逢甲最受歡迎飲料店投票！</h3>
+                <p>請填寫您的資料後，選擇您最喜歡的逢甲飲料店進行投票。</p>
+            </div>
+            
+            <form id="userForm">
+                <div class="form-group">
+                    <label for="class">班級：</label>
+                    <input type="text" id="class" name="class" required placeholder="例如：資訊三甲">
+                </div>
+                
+                <div class="form-group">
+                    <label for="name">姓名：</label>
+                    <input type="text" id="name" name="name" required placeholder="請輸入您的姓名">
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentId">學號：</label>
+                    <input type="text" id="studentId" name="studentId" required placeholder="請輸入您的學號">
+                </div>
+                
+                <button type="submit" class="btn">開始投票</button>
+            </form>
+        </div>
+        
+        <div id="votingSection" style="display: none;">
+            <div id="messageBox"></div>
+            
+            <h2 style="margin-bottom: 20px;">請選擇您最喜歡的逢甲飲料店：</h2>
+            
+            <form id="voteForm">
+                <div class="drink-options">
+                    <label class="drink-option">
+                        <input type="radio" name="drink" value="一沐日 逢甲文華店">
+                        <div class="drink-name">一沐日 逢甲文華店</div>
+                        <div class="drink-desc">日式風格茶飲，精緻手作飲品</div>
+                    </label>
+                    
+                    <label class="drink-option">
+                        <input type="radio" name="drink" value="龜記茗品-逢甲福星店">
+                        <div class="drink-name">龜記茗品-逢甲福星店</div>
+                        <div class="drink-desc">復古冬瓜茶專門店，招牌冬瓜系列</div>
+                    </label>
+                    
+                    <label class="drink-option">
+                        <input type="radio" name="drink" value="先喝道逢甲河南店">
+                        <div class="drink-name">先喝道逢甲河南店</div>
+                        <div class="drink-desc">古早味回甘茶，獨特茶湯風味</div>
+                    </label>
+                    
+                    <label class="drink-option">
+                        <input type="radio" name="drink" value="迷客夏Milksha 臺中河南店">
+                        <div class="drink-name">迷客夏Milksha 臺中河南店</div>
+                        <div class="drink-desc">鮮奶茶專家，綠光牧場鮮奶系列</div>
+                    </label>
+                    
+                    <label class="drink-option">
+                        <input type="radio" name="drink" value="拾汣茶屋 逢甲旗艦店">
+                        <div class="drink-name">拾汣茶屋 逢甲旗艦店</div>
+                        <div class="drink-desc">精品台灣茶，文青風格茶飲</div>
+                    </label>
+                    
+                    <label class="drink-option">
+                        <input type="radio" name="drink" value="八曜和茶 台中逢甲門市">
+                        <div class="drink-name">八曜和茶 台中逢甲門市</div>
+                        <div class="drink-desc">日式抹茶專門，道地和風茶飲</div>
+                    </label>
+                    
+                    <label class="drink-option">
+                        <input type="radio" name="drink" value="烏弄原生茶飲-逢甲西屯店">
+                        <div class="drink-name">烏弄原生茶飲-逢甲西屯店</div>
+                        <div class="drink-desc">台灣原生茶葉，堅持純茶風味</div>
+                    </label>
+                    
+                    <label class="drink-option">
+                        <input type="radio" name="drink" value="耍廢茶-逢甲旗艦店">
+                        <div class="drink-name">耍廢茶-逢甲旗艦店</div>
+                        <div class="drink-desc">創意特調茶飲，年輕潮流首選</div>
+                    </label>
+                    
+                    <label class="drink-option">
+                        <input type="radio" name="drink" value="顏太煮奶茶-台中逢甲店">
+                        <div class="drink-name">顏太煮奶茶-台中逢甲店</div>
+                        <div class="drink-desc">傳統煮茶工法，濃醇香奶茶</div>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn">送出投票</button>
+            </form>
+        </div>
+        
+        <div id="resultsSection" style="display: none;">
+            <div class="results">
+                <h2>📊 即時投票結果</h2>
+                <div id="resultsContainer"></div>
+                <div class="vote-count-info" id="voteCountInfo"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 確保 DOM 載入完成後再執行
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('頁面載入完成');
+            
+            // 儲存投票資料（因為不能使用 localStorage，所以用記憶體儲存）
+            let votes = {};
+            let voters = new Set();
+            let currentUser = null;
+            
+            // 飲料店選項
+            const drinkShops = [
+                '一沐日 逢甲文華店',
+                '龜記茗品-逢甲福星店',
+                '先喝道逢甲河南店',
+                '迷客夏Milksha 臺中河南店',
+                '拾汣茶屋 逢甲旗艦店',
+                '八曜和茶 台中逢甲門市',
+                '烏弄原生茶飲-逢甲西屯店',
+                '耍廢茶-逢甲旗艦店',
+                '顏太煮奶茶-台中逢甲店'
+            ];
+            
+            // 初始化投票資料
+            drinkShops.forEach(shop => {
+                votes[shop] = 0;
+            });
+            
+            // 處理登入表單
+            const userForm = document.getElementById('userForm');
+            if (userForm) {
+                userForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('表單提交被觸發');
+                    
+                    const userClass = document.getElementById('class').value.trim();
+                    const userName = document.getElementById('name').value.trim();
+                    const studentId = document.getElementById('studentId').value.trim();
+                    
+                    console.log('使用者資料:', { userClass, userName, studentId });
+                    
+                    if (!userClass || !userName || !studentId) {
+                        alert('請填寫所有欄位');
+                        return;
+                    }
+                    
+                    // 儲存使用者資料
+                    currentUser = {
+                        class: userClass,
+                        name: userName,
+                        studentId: studentId,
+                        userId: `${userClass}_${userName}_${studentId}`
+                    };
+                    
+                    // 檢查是否已投票
+                    if (voters.has(currentUser.userId)) {
+                        alert('您已經投過票了！即將顯示投票結果');
+                        setTimeout(() => {
+                            showResults();
+                        }, 1500);
+                        return;
+                    }
+                    
+                    // 顯示投票區域
+                    console.log('準備切換到投票區域');
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('votingSection').style.display = 'block';
+                    console.log('切換完成');
+                });
+            }
+            
+            // 處理投票表單
+            const voteForm = document.getElementById('voteForm');
+            if (voteForm) {
+                voteForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('投票表單提交');
+                    
+                    const selectedDrink = document.querySelector('input[name="drink"]:checked');
+                    
+                    if (!selectedDrink) {
+                        alert('請選擇一個飲料店');
+                        return;
+                    }
+                    
+                    // 記錄投票
+                    votes[selectedDrink.value]++;
+                    voters.add(currentUser.userId);
+                    
+                    alert('投票成功！感謝您的參與');
+                    
+                    // 顯示結果
+                    setTimeout(() => {
+                        showResults();
+                    }, 1500);
+                });
+            }
+            
+            // 選項點擊效果
+            document.querySelectorAll('.drink-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.drink-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                });
+            });
+            
+            // 顯示訊息
+            function showMessage(message, type) {
+                const messageBox = document.getElementById('messageBox');
+                if (messageBox) {
+                    messageBox.innerHTML = `<div class="message ${type}">${message}</div>`;
+                    
+                    setTimeout(() => {
+                        messageBox.innerHTML = '';
+                    }, 3000);
+                }
+            }
+            
+            // 顯示投票結果
+            function showResults() {
+                document.getElementById('votingSection').style.display = 'none';
+                document.getElementById('resultsSection').style.display = 'block';
+                
+                updateResults();
+                
+                // 每 2 秒更新一次結果（模擬即時更新）
+                setInterval(updateResults, 2000);
+            }
+            
+            // 更新結果顯示
+            function updateResults() {
+                const resultsContainer = document.getElementById('resultsContainer');
+                const totalVotes = voters.size;
+                
+                // 排序投票結果
+                const sortedResults = Object.entries(votes).sort((a, b) => b[1] - a[1]);
+                const maxVotes = Math.max(...Object.values(votes));
+                
+                resultsContainer.innerHTML = '';
+                
+                sortedResults.forEach(([shop, count], index) => {
+                    const percentage = totalVotes > 0 ? (count / totalVotes * 100).toFixed(1) : 0;
+                    const isWinner = count === maxVotes && count > 0;
+                    
+                    const resultItem = document.createElement('div');
+                    resultItem.className = `result-item ${isWinner ? 'winner' : ''}`;
+                    
+                    resultItem.innerHTML = `
+                        <div class="result-name">${shop}</div>
+                        <div class="result-bar">
+                            <div class="result-fill" style="width: ${percentage}%">
+                                ${percentage > 15 ? percentage + '%' : ''}
+                            </div>
+                        </div>
+                        <div class="result-count">${count} 票</div>
+                    `;
+                    
+                    resultsContainer.appendChild(resultItem);
+                });
+                
+                // 更新總投票數
+                document.getElementById('voteCountInfo').innerHTML = 
+                    `<strong>總投票人數：${totalVotes} 人</strong><br>
+                    <small>每人限投一票</small>`;
+            }
+            
+            // 模擬其他人投票（測試用）
+            function simulateVote() {
+                const randomShop = drinkShops[Math.floor(Math.random() * drinkShops.length)];
+                const randomId = 'user_' + Math.random().toString(36).substr(2, 9);
+                
+                if (!voters.has(randomId)) {
+                    votes[randomShop]++;
+                    voters.add(randomId);
+                }
+            }
+            
+            // 每 5 秒模擬一次投票（可以註解掉這行停止模擬）
+            // setInterval(simulateVote, 5000);
+            
+            // 加入測試模式（在控制台輸入 window.enableTestMode() 可以啟用）
+            window.enableTestMode = function() {
+                setInterval(simulateVote, 3000);
+                console.log('測試模式已啟用，每3秒會模擬一次投票');
+            };
+        });
+    </script>
+</body>
+</html>
